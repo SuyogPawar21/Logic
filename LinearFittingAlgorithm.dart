@@ -2,7 +2,6 @@ import 'dart:math';
 import 'Allocation.dart';
 import 'Infra.dart';
 import 'Schedules.dart';
-import 'Teacher.dart';
 import 'TheoryAllocation.dart';
 
 class SubjectPosition {
@@ -20,12 +19,25 @@ class LinearFittingAlgorithm {
   };
 
   static List<int> _breakPositons = [2, 6];
+
   static Infra _infra = new Infra();
 
   static get getInfra => _infra;
   set setInfra(Infra infra) => _infra = infra;
   Map<String, int> get practicalSlots => _practicalSlots;
   set practicalSlots(Map<String, int> value) => _practicalSlots = value;
+
+  static _getTeacher(int teacherPos) => _infra.teachers[teacherPos];
+
+  static _getTeacherSubject(int teacherPos, int subjectPos) =>
+      _infra.teachers[teacherPos].subjects[subjectPos];
+
+  static _getTeacherSchedule(int teacherPos) =>
+      _infra.teachers[teacherPos].schedule;
+
+  static bool _isTeacherFree(int teacherPos, int day, int slot) {
+    return _infra.teachers.schedule[day][slot] == "Free";
+  }
 
   static List<SubjectPosition> _getClassSubjects(String Class) {
     int teacherPos,
@@ -52,34 +64,30 @@ class LinearFittingAlgorithm {
     int teacherPos;
     int subjectPos;
 
+    int subjectChoiceLimit = 0;
+
     do {
+      subjectChoiceLimit++;
       teacherClassPos = Random().nextInt(cClassSubjects.length);
       teacherPos = cClassSubjects[teacherClassPos].teacherPos;
       subjectPos = cClassSubjects[teacherClassPos].subjectPos;
+
+      if (subjectChoiceLimit == 15) {
+        return new TheoryAllocation();
+      }
     } while (!_isTeacherFree(teacherPos, day, slot) ||
-        !_getTeacherSubject(teacherPos, subjectPos).isTheory);
+        !_getTeacherSubject(teacherPos, subjectPos).isTheory || 
+        _getTeacherSubject(teacherPos, subjectPos));
 
     _getTeacherSchedule(teacherPos)[day][slot] =
         _getTeacherSubject(teacherPos, subjectPos).name +
-            "-" +
-            _getTeacher(teacherPos).name;
+            "-" 
+            _getTeacherSubject(teacherPos, subjectPos).Class;
 
     cClassSubjects.removeAt(teacherClassPos);
 
     return new TheoryAllocation.param("Classroom", _getTeacher(teacherPos).name,
         _getTeacherSubject(teacherPos, subjectPos).name);
-  }
-
-  static _getTeacher(int teacherPos) => _infra.teachers[teacherPos];
-
-  static _getTeacherSubject(int teacherPos, int subjectPos) =>
-      _infra.teachers[teacherPos].subjects[subjectPos];
-
-  static _getTeacherSchedule(int teacherPos) =>
-      _infra.teachers[teacherPos].schedule;
-
-  static bool _isTeacherFree(int teacherPos, int day, int slot) {
-    return _infra.teachers.schedule[day][slot] == "Free";
   }
 
   static List<List<Allocation>> _classFit(String Class) {
@@ -115,5 +123,5 @@ class LinearFittingAlgorithm {
 }
 
 void main(List<String> args) {
-  List<Teacher> teachers = new List.empty(growable: true);
+  LinearFittingAlgorithm.fit();
 }
