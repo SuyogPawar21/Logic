@@ -4,5 +4,5 @@ abstract class Allocation {
   bool get isTheory => this._isTheory;
   set isTheory(bool value) => this._isTheory = value;
 
-  String stringRep();
+  List<String> stringRep();
 }

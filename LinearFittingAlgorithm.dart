@@ -1,7 +1,15 @@
+import 'dart:math';
 import 'Allocation.dart';
 import 'Infra.dart';
 import 'Schedules.dart';
+import 'Teacher.dart';
 import 'TheoryAllocation.dart';
+
+class SubjectPosition {
+  int teacherPos, subjectPos;
+
+  SubjectPosition(this.teacherPos, this.subjectPos);
+}
 
 class LinearFittingAlgorithm {
   static Map<String, int> _practicalSlots = {
@@ -12,12 +20,10 @@ class LinearFittingAlgorithm {
   };
 
   static List<int> _breakPositons = [2, 6];
-
   static Infra _infra = new Infra();
 
   static get getInfra => _infra;
   set setInfra(Infra infra) => _infra = infra;
-
   Map<String, int> get practicalSlots => _practicalSlots;
   set practicalSlots(Map<String, int> value) => _practicalSlots = value;
 
@@ -40,11 +46,59 @@ class LinearFittingAlgorithm {
     return classSubjects;
   }
 
+  static TheoryAllocation _fitTheorySlot(
+      List<SubjectPosition> cClassSubjects, int day, int slot) {
+    int teacherClassPos;
+    int teacherPos;
+    int subjectPos;
+
+    do {
+      teacherClassPos = Random().nextInt(cClassSubjects.length);
+      teacherPos = cClassSubjects[teacherClassPos].teacherPos;
+      subjectPos = cClassSubjects[teacherClassPos].subjectPos;
+    } while (!_isTeacherFree(teacherPos, day, slot) ||
+        !_getTeacherSubject(teacherPos, subjectPos).isTheory);
+
+    _getTeacherSchedule(teacherPos)[day][slot] =
+        _getTeacherSubject(teacherPos, subjectPos).name +
+            "-" +
+            _getTeacher(teacherPos).name;
+
+    cClassSubjects.removeAt(teacherClassPos);
+
+    return new TheoryAllocation.param("Classroom", _getTeacher(teacherPos).name,
+        _getTeacherSubject(teacherPos, subjectPos).name);
+  }
+
+  static _getTeacher(int teacherPos) => _infra.teachers[teacherPos];
+
+  static _getTeacherSubject(int teacherPos, int subjectPos) =>
+      _infra.teachers[teacherPos].subjects[subjectPos];
+
+  static _getTeacherSchedule(int teacherPos) =>
+      _infra.teachers[teacherPos].schedule;
+
+  static bool _isTeacherFree(int teacherPos, int day, int slot) {
+    return _infra.teachers.schedule[day][slot] == "Free";
+  }
+
   static List<List<Allocation>> _classFit(String Class) {
     List<SubjectPosition> classSubjects = _getClassSubjects(Class);
+    List<SubjectPosition> cClassSubjects = List.from(classSubjects);
 
     List<List<Allocation>> classTimeTable =
         new List.filled(5, new List.filled(9, new TheoryAllocation()));
+
+    for (int i = 0; i < 5; i++) {
+      for (int j = 0; j < 9; j++) {
+        if (_practicalSlots[Class] == j) {
+        } else if (_breakPositons.contains(j)) {
+          continue;
+        } else {
+          _fitTheorySlot(cClassSubjects, i, j);
+        }
+      }
+    }
 
     return classTimeTable;
   }
@@ -60,10 +114,6 @@ class LinearFittingAlgorithm {
   }
 }
 
-class SubjectPosition {
-  int teacherPos, subjectPos;
-
-  SubjectPosition(this.teacherPos, this.subjectPos);
+void main(List<String> args) {
+  List<Teacher> teachers = new List.empty(growable: true);
 }
-
-void main(List<String> args) {}

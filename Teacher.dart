@@ -2,7 +2,7 @@ import 'Subject.dart';
 
 class Teacher {
   String _name = "Sarang Saoji";
-  List<List<String>> _schedule = [[]];
+  List<List<String>> _schedule = List.filled(5, List.filled(9, "Free"));
   List<Subject> _subjects = [];
 
   Teacher();

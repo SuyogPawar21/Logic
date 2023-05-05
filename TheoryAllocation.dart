@@ -12,8 +12,12 @@ class TheoryAllocation extends Allocation {
   get subject => this._subject;
   set subject(value) => this._subject = value;
 
+  TheoryAllocation();
+
+  TheoryAllocation.param(this._classRoom, this._teacher, this._subject);
+
   @override
-  String stringRep() {
-    return "$_subject-$_teacher-$_classRoom";
+  List<String> stringRep() {
+    return ["$_subject-$_teacher-$_classRoom"];
   }
 }
