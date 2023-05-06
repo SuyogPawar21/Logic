@@ -73,15 +73,15 @@ class LinearFittingAlgorithm {
       subjectPos = cClassSubjects[teacherClassPos].subjectPos;
 
       if (subjectChoiceLimit == 15) {
-        return new TheoryAllocation();
+        return new TheoryAllocation.param("null", "null", "null");
       }
     } while (!_isTeacherFree(teacherPos, day, slot) ||
-        !_getTeacherSubject(teacherPos, subjectPos).isTheory || 
-        _getTeacherSubject(teacherPos, subjectPos));
+        !_getTeacherSubject(teacherPos, subjectPos).isTheory ||
+        _getTeacherSubject(teacherPos, subjectPos).hoursAllocated == 0);
 
     _getTeacherSchedule(teacherPos)[day][slot] =
         _getTeacherSubject(teacherPos, subjectPos).name +
-            "-" 
+            " " +
             _getTeacherSubject(teacherPos, subjectPos).Class;
 
     cClassSubjects.removeAt(teacherClassPos);
