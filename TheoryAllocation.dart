@@ -18,6 +18,6 @@ class TheoryAllocation extends Allocation {
 
   @override
   List<String> stringRep() {
-    return ["$_subject-$_teacher-$_classRoom"];
+    return ["$_subject $_teacher $_classRoom"];
   }
 }
