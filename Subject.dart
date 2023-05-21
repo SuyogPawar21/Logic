@@ -1,7 +1,7 @@
 class Subject {
-  String _name = "OOP";
+  String _name = "";
   String _subjectCode = "11111";
-  String _class = "SE-B";
+  String _class = "";
   bool _isTheory = true;
   int _hoursAllocated = 3;
 

@@ -1,24 +1,28 @@
 import 'Subject.dart';
 
 class Teacher {
-  String _name = "Sarang Saoji";
+  String _name = "";
   List<List<String>> _schedule = List.filled(5, List.filled(9, "Free"));
   List<Subject> _subjects = [new Subject()];
+  String _shortName = "null";
 
   Teacher();
 
-  Teacher.param(this._name, this._schedule, this._subjects);
+  Teacher.param(this._name, this._schedule, this._subjects, this._shortName);
 
   Teacher.copy(Teacher teacher) {
     this._name = teacher.name;
     this._schedule = teacher.schedule;
     this._subjects = teacher.subjects;
+    this._shortName = teacher._shortName;
   }
 
   String get name => this._name;
-  set setName(String value) => this._name = value;
+  set name(String value) => this._name = value;
   get schedule => this._schedule;
-  set setSchedule(value) => this._schedule = value;
+  set schedule(value) => this._schedule = value;
   get subjects => this._subjects;
-  set setSubjects(value) => this._subjects = value;
+  set subjects(value) => this._subjects = value;
+  String get shortName => this._shortName;
+  set shortName(String value) => this._shortName = value;
 }

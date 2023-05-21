@@ -1,10 +1,16 @@
 import 'Allocation.dart';
+import 'TheoryAllocation.dart';
 
 class LabAllocation extends Allocation {
-  List<Allocation> _allocations = [];
+  List<Allocation> _allocations =
+      new List.generate(4, (_) => new TheoryAllocation());
 
   List<Allocation> get allocations => this._allocations;
   set allocations(List<Allocation> value) => this._allocations = value;
+
+  LabAllocation();
+
+  LabAllocation.param(this._allocations);
 
   @override
   List<String> stringRep() {

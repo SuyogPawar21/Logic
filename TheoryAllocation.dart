@@ -1,9 +1,9 @@
 import 'Allocation.dart';
 
 class TheoryAllocation extends Allocation {
-  String _classRoom = "315";
-  String _teacher = "Sarang Saoji";
-  String _subject = "OOP";
+  String _classRoom = "";
+  String _teacher = "";
+  String _subject = "";
 
   String get classRoom => this._classRoom;
   set classRoom(String value) => this._classRoom = value;

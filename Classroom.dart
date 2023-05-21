@@ -1,10 +1,8 @@
-import 'Subject.dart';
-
 class Classroom {
   bool _isClass = true;
-  String _roomNo = "315";
-  List<Subject> _subjects = [];
-  List<List<String>> _schedule = [[]];
+  String _roomNo = "";
+  List<String> _subjects = [];
+  List<List<String>> _schedule = List.filled(5, List.filled(9, "Free"));
 
   Classroom();
 
@@ -18,11 +16,11 @@ class Classroom {
   }
 
   bool get isClass => this._isClass;
-  set setIsClass(bool value) => this._isClass = value;
+  set isClass(bool value) => this._isClass = value;
   get roomNo => this._roomNo;
-  set setRoomNo(value) => this._roomNo = value;
+  set roomNo(value) => this._roomNo = value;
   get subjects => this._subjects;
-  set setSubjects(value) => this._subjects = value;
+  set subjects(value) => this._subjects = value;
   get schedule => this._schedule;
-  set setSchedule(value) => this._schedule = value;
+  set schedule(value) => this._schedule = value;
 }
