@@ -29,11 +29,27 @@ class LinearFittingAlgorithm {
   static get schedules => _schedules;
 
   static printClassSchedule(String Class) {
+    bool flag = false;
     for (int j = 0; j < 9; j++) {
+      flag = false;
+      if (_practicalSlots[Class] == j) {
+        flag = true;
+      }
       print("");
       for (int i = 0; i < 5; i++) {
-        stdout
-            .write(schedules.classSchedules[Class][i][j].stringRep()[0] + "  ");
+        if (flag) {
+          stdout.write(
+              schedules.classSchedules[Class][i][j].stringRep()[0] + "  ");
+          stdout.write(
+              schedules.classSchedules[Class][i][j].stringRep()[1] + "  ");
+          stdout.write(
+              schedules.classSchedules[Class][i][j].stringRep()[2] + "  ");
+          stdout.write(
+              schedules.classSchedules[Class][i][j].stringRep()[3] + "  ");
+        } else {
+          stdout.write(
+              schedules.classSchedules[Class][i][j].stringRep()[0] + "  ");
+        }
       }
     }
   }
@@ -46,6 +62,18 @@ class LinearFittingAlgorithm {
             schedules.teacherSchedules[teacherPos].schedule[i][j] + "  ");
       }
     }
+    print("");
+  }
+
+  static printClassRoomSchedule(int classPos) {
+    for (int j = 0; j < 9; j++) {
+      print("");
+      for (int i = 0; i < 5; i++) {
+        stdout.write(
+            schedules.classRoomSchedules[classPos].schedule[i][j] + "  ");
+      }
+    }
+    print("");
   }
 
   static void fit() {
@@ -76,8 +104,9 @@ class LinearFittingAlgorithm {
       cClassPracticalSubjects = List.from(classPracticalSubjects);
       for (int j = 0; j < 9; j++) {
         if (_practicalSlots[Class] == j) {
-          classTimeTable[i][j] =
-              _fitPraticalSlot(cClassPracticalSubjects, i, j);
+          classTimeTable[i][j] = (Class != "BE")
+              ? _fitPraticalSlot(cClassPracticalSubjects, i, j)
+              : _fitBEPraticalSlot(cClassPracticalSubjects, i, j);
           j++;
         } else if (_breakPositions.contains(j)) {
           classTimeTable[i][j] = new TheoryAllocation.param(" ", "Break", "");
@@ -92,7 +121,18 @@ class LinearFittingAlgorithm {
   static LabAllocation _fitPraticalSlot(
       List<SubjectPosition> cClassSubjects, int day, int slot) {
     LabAllocation labAllocation = new LabAllocation();
-    for (int i = 0; i < 4; i++) {
+    int i;
+    for (i = 0; i < 4; i++) {
+      labAllocation.allocations[i] = _fitLabBatch(cClassSubjects, day, slot);
+    }
+    return labAllocation;
+  }
+
+  static LabAllocation _fitBEPraticalSlot(
+      List<SubjectPosition> cClassSubjects, int day, int slot) {
+    LabAllocation labAllocation = new LabAllocation();
+    int i;
+    for (i = 0; i < 3; i++) {
       labAllocation.allocations[i] = _fitLabBatch(cClassSubjects, day, slot);
     }
     return labAllocation;
@@ -118,8 +158,12 @@ class LinearFittingAlgorithm {
     } while (!_isTeacherFree(teacherPos, day, slot) ||
         _getTeacherSubject(teacherPos, subjectPos).isTheory);
 
-    int classPos =
-        _getValidClassRoom(new SubjectPosition(teacherPos, subjectPos), false);
+    int classPos = _getValidClassRoom(
+        new SubjectPosition(teacherPos, subjectPos), false, day, slot);
+
+    if (classPos == -1) {
+      return new TheoryAllocation.param("", "null", "");
+    }
 
     _getClassRoomSchedule(classPos)[day][slot] =
         _getTeacherSubject(teacherPos, subjectPos).name +
@@ -161,9 +205,12 @@ class LinearFittingAlgorithm {
     } while (!_isTeacherFree(teacherPos, day, slot) ||
         !_getTeacherSubject(teacherPos, subjectPos).isTheory);
 
-    int classPos =
-        _getValidClassRoom(new SubjectPosition(teacherPos, subjectPos), true);
+    int classPos = _getValidClassRoom(
+        new SubjectPosition(teacherPos, subjectPos), true, day, slot);
 
+    if (classPos == -1) {
+      return new TheoryAllocation.param("", "null", "");
+    }
     _getClassRoomSchedule(classPos)[day][slot] =
         _getTeacherSubject(teacherPos, subjectPos).name +
             " " +
@@ -184,17 +231,30 @@ class LinearFittingAlgorithm {
         _getTeacherSubject(teacherPos, subjectPos).name);
   }
 
-  static int _getValidClassRoom(SubjectPosition position, bool isTheory) {
+  static int _getValidClassRoom(
+      SubjectPosition position, bool isTheory, int day, int slot) {
     int classPos;
+
+    int classChoiceLimit = 0;
 
     if (isTheory) {
       do {
         classPos = Random().nextInt(_infra.classes.length);
-      } while (!_infra.classes[classPos].isClass);
+        classChoiceLimit++;
+        if (classChoiceLimit == 500) {
+          return -1;
+        }
+      } while (!_infra.classes[classPos].isClass ||
+          !_isClassFree(classPos, day, slot));
     } else {
       do {
         classPos = Random().nextInt(_infra.classes.length);
-      } while (!_isValidClassRoom(classPos, position));
+        classChoiceLimit++;
+        if (classChoiceLimit == 500) {
+          return -1;
+        }
+      } while (!_isValidClassRoom(classPos, position) ||
+          !_isClassFree(classPos, day, slot));
     }
 
     return classPos;
@@ -259,6 +319,10 @@ class LinearFittingAlgorithm {
 
   static bool _isTeacherFree(int teacherPos, int day, int slot) {
     return _infra.teachers[teacherPos].schedule[day][slot] == "Free";
+  }
+
+  static bool _isClassFree(int classPos, int day, int slot) {
+    return _infra.classes[classPos].schedule[day][slot] == "Free";
   }
 
   static _getClassRoomSchedule(int classPos) {

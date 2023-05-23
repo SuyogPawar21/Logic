@@ -2,7 +2,8 @@ class Classroom {
   bool _isClass = true;
   String _roomNo = "";
   List<String> _subjects = [];
-  List<List<String>> _schedule = List.filled(5, List.filled(9, "Free"));
+  List<List<String>> _schedule =
+      List.generate(5, (_) => List.generate(9, (_) => "Free"));
 
   Classroom();
 

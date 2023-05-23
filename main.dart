@@ -2,7 +2,6 @@ import 'Classroom.dart';
 import 'LinearFittingAlgorithm.dart';
 import 'Subject.dart';
 import 'Teacher.dart';
-import 'dart:io';
 
 void main(List<String> args) {
   List<Teacher> teachers1 = new List.generate(20, (_) => new Teacher());
@@ -52,7 +51,7 @@ void main(List<String> args) {
   teachers1[5].subjects = [
     Subject.param("AI", "314454", "TE", true, 3),
     Subject.param("LP-II", "314458", "TE", false, 2),
-    Subject.param("Elective-VI", "414452", "BE", false, 4),
+    Subject.param("Elective-VI", "414452", "BE", true, 3),
     Subject.param("LP-VI", "414455", "BE", false, 6)
   ];
 
@@ -86,7 +85,6 @@ void main(List<String> args) {
   teachers1[9].subjects = [
     Subject.param("CNS", "314451", "TE", true, 3),
     Subject.param("CNSL", "314456", "TE", false, 12),
-    Subject.param("Elective-VI", "414452", "BE", false, 4),
     Subject.param("AC6", "314459", "TE", true, 1)
   ];
 
@@ -134,7 +132,7 @@ void main(List<String> args) {
     Subject.param("DBMSL", "214456", "SE-B", false, 12)
   ];
 
-  List<Classroom> classrooms1 = new List.generate(12, (_) => new Classroom());
+  List<Classroom> classrooms1 = new List.generate(13, (_) => new Classroom());
 
   classrooms1[0].roomNo = "314";
 
@@ -152,11 +150,11 @@ void main(List<String> args) {
 
   classrooms1[5].roomNo = "224";
   classrooms1[5].isClass = false;
-  classrooms1[5].subjects = ["PBL", "DSBDL", "LP-II"];
+  classrooms1[5].subjects = ["PBL", "DSBDL", "LP-II", "CGL"];
 
   classrooms1[6].roomNo = "225";
   classrooms1[6].isClass = false;
-  classrooms1[6].subjects = ["DSBDL"];
+  classrooms1[6].subjects = ["DSBDL", "CGL"];
 
   classrooms1[7].roomNo = "316";
   classrooms1[7].isClass = false;
@@ -178,10 +176,14 @@ void main(List<String> args) {
   classrooms1[11].isClass = false;
   classrooms1[11].subjects = ["LP-VI"];
 
+  classrooms1[12].roomNo = "310";
+
   LinearFittingAlgorithm.infra.classes = classrooms1;
   LinearFittingAlgorithm.infra.teachers = teachers1;
 
   LinearFittingAlgorithm.fit();
-  LinearFittingAlgorithm.printClassSchedule("SE-B");
-  LinearFittingAlgorithm.printTeacherSchedule(2);
+  LinearFittingAlgorithm.printClassSchedule("SE-A");
+  print("");
+  LinearFittingAlgorithm.printTeacherSchedule(1);
+  LinearFittingAlgorithm.printClassRoomSchedule(0);
 }
