@@ -184,6 +184,6 @@ void main(List<String> args) {
   LinearFittingAlgorithm.fit();
   LinearFittingAlgorithm.printClassSchedule("SE-A");
   print("");
-  LinearFittingAlgorithm.printTeacherSchedule(1);
-  LinearFittingAlgorithm.printClassRoomSchedule(0);
+  LinearFittingAlgorithm.printTeacherSchedule(3);
+  LinearFittingAlgorithm.printClassRoomSchedule(3);
 }
